@@ -21,30 +21,6 @@
             align-items: center;
             text-align: center;
             overflow: hidden; 
-            position: relative;
-        }
-
-        /* Tillfällig testknapp placerad i övre högra hörnet */
-        .test-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: #4e7da1;
-            color: #FFFFF9;
-            border: none;
-            padding: 10px 15px;
-            font-family: 'Open Sans', sans-serif;
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border-radius: 5px;
-            opacity: 0.7;
-            transition: opacity 0.2s;
-            z-index: 100;
-        }
-
-        .test-btn:hover {
-            opacity: 1;
         }
 
         .container {
@@ -56,7 +32,7 @@
 
         .title {
             font-size: clamp(2.5rem, 7vw, 5.5rem);
-            font-weight: 700;
+            font-weight: 800; /* Ändrad till Extra Bold från 700 */
             letter-spacing: 0.4vw;
             margin: 0;
         }
@@ -75,9 +51,9 @@
             margin: 0;
         }
 
-        /* Styling för det uppdaterade sommarlovsmeddelandet på en rad */
+        /* Styling för sommarlovsmeddelandet på en rad */
         .holiday-message-large {
-            font-size: clamp(2rem, 5.5vw, 5.5rem); /* Något nedjusterad skala för att säkra en rad */
+            font-size: clamp(2rem, 5.5vw, 5.5rem);
             font-weight: 800;
             line-height: 1.2;
             width: 100%;
@@ -96,20 +72,17 @@
 </head>
 <body>
 
-    <!-- Testknapp för att förhandsgranska meddelandet -->
-    <button class="test-btn" id="demo-button" onclick="testaHalsning()">Testa 11 Juni-vyn</button>
-
     <div class="container" id="content-container">
-        <!-- Innehållet styrs dynamiskt av JavaScriptet -->
+        <!-- Innehållet styrs helt dynamiskt av JavaScriptet -->
     </div>
 
     <script>
-        function uppdateraSida(tvingaHalsning = false) {
+        function uppdateraSida() {
             const idag = new Date();
             const nuvarandeAr = idag.getFullYear();
             
             // Kolla om det är 11 juni (månad indexeras från 0, så 5 = juni)
-            if (tvingaHalsning || (idag.getMonth() === 5 && idag.getDate() === 11)) {
+            if (idag.getMonth() === 5 && idag.getDate() === 11) {
                 // Visa sommarlovsmeddelandet
                 document.getElementById('content-container').innerHTML = `
                     <h1 class="holiday-message-large">
@@ -148,12 +121,6 @@
                     <h2 class="subtitle">SKOLDAGAR</h2>
                 `;
             }
-        }
-
-        // Funktion för testknappen
-        function testaHalsning() {
-            document.getElementById('demo-button').style.display = 'none';
-            uppdateraSida(true);
         }
 
         // Kör funktionen vid sidladdning
