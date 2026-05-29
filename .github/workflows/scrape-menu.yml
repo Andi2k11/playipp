@@ -19,13 +19,13 @@ jobs:
       - name: Kolla ut koden
         uses: actions/checkout@v4
 
-      - name: Hamta matsedel fran Skolmaten API
+      - name: Hamta matsedel via Skolmaten RSS
         run: |
-          curl -s "https://api.skolmaten.se/3/menu/school/4678174526636032?locale=sv" -o mat.json
+          curl -s "https://skolmaten.se/api/4/rss/week/sodervangskolan?locale=sv" -o mat.xml
 
       - name: Spara och pusha andringar till GitHub
         run: |
           git config --global user.name "GitHub Action Bot"
           git config --global user.email "actions@github.com"
-          git add mat.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Automatisk uppdatering av matsedel" && git push)
+          git add mat.xml
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Automatisk uppdatering av RSS-matsedel" && git push)
