@@ -21,7 +21,7 @@ jobs:
 
       - name: Hamta matsedel fran Skolmaten API
         run: |
-          curl -s "https://menu.skolmaten.se/api/2/menu/school/4678174526636032" -o mat.json
+          curl -s "https://api.skolmaten.se/3/menu/school/4678174526636032?locale=sv" -o mat.json
 
       - name: Spara och pusha andringar till GitHub
         run: |
