@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veckans Matsedel</title>
+    <title>Veckans Matsedel - Södervångskolan</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@700;800&display=swap" rel="stylesheet">
@@ -24,14 +24,14 @@
         body {
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 25px 20px;
         }
 
         .menu-title {
             font-size: 28px;
             font-weight: 800;
             letter-spacing: 2px;
-            margin: 0 0 15px 0;
+            margin: 0 0 20px 0;
             text-transform: uppercase;
             text-align: center;
             border-bottom: 3px solid #4e7da1;
@@ -46,9 +46,10 @@
         }
 
         .day-row {
-            padding: 6px 10px;
+            padding: 8px 12px;
             border-radius: 6px;
             opacity: 0.75;
+            transition: all 0.3s ease;
         }
 
         .day-name {
@@ -62,22 +63,23 @@
         .food-text {
             font-size: 14px;
             font-weight: 700;
-            margin: 2px 0 0 0;
+            margin: 4px 0 0 0;
             line-height: 1.3;
             color: #5c6b73;
         }
 
+        /* --- STYLING FÖR DAGENS RÄTT --- */
         .day-row.today {
             background-color: #4e7da1;
             color: #FFFFF9;
             opacity: 1;
-            padding: 10px;
-            box-shadow: 0 4px 10px rgba(78, 125, 161, 0.2);
+            padding: 14px 12px;
+            box-shadow: 0 4px 12px rgba(78, 125, 161, 0.25);
         }
 
         .day-row.today .food-text {
             color: #FFFFF9;
-            font-size: 16px;
+            font-size: 15px;
         }
         
         .day-row.today .day-name {
@@ -88,7 +90,7 @@
             text-align: center;
             font-size: 18px;
             font-weight: 700;
-            margin-top: 50px;
+            margin-top: 100px;
         }
     </style>
 </head>
@@ -96,18 +98,17 @@
 
     <h1 class="menu-title">Skolmat</h1>
     <div class="days-container" id="menu-content">
-        <div class="status-message">Hämtar veckans meny...</div>
+        <div class="status-message">Laddar veckans matsedel...</div>
     </div>
 
     <script>
-        // Vi använder en stabil och öppen open-source proxy (ThingProxy) för att hämta Skolmatens JSON-API säkert
-        const apiTarget = "https://skolmaten.se/api/4/menu/sodervangskolan?locale=sv";
-        const cleanProxy = "https://thingproxy.freeboard.io/fetch/" + apiTarget;
-
         async function laddaMatsedel() {
             try {
-                const response = await fetch(cleanProxy);
-                if (!response.ok) throw new Error("Kunde inte läsa data");
+                // Hämtar mat.json direkt från ditt eget repo med en cache-buster
+                const cacheBuster = "?t=" + new Date().getTime();
+                const response = await fetch('mat.json' + cacheBuster);
+                
+                if (!response.ok) throw new Error("Kunde inte hitta mat.json");
                 
                 const data = await response.json();
                 const menuContent = document.getElementById("menu-content");
@@ -124,9 +125,11 @@
                 for (let i = 0; i < Math.min(dagar.length, 5); i++) {
                     const dagData = dagar[i];
                     const veckodag = dagData.name; 
-                    const beskrivning = dagData.items.join(", "); 
+                    
+                    // Slår ihop rätter om det finns flera (t.ex. vegetariskt)
+                    const beskrivning = dagData.items.join(" / "); 
 
-                    // Kollar om dagen är idag
+                    // Kolla om raden är dagens dag (måndag=1, tisdag=2...)
                     const arIdag = (dagensIndex === (i + 1)) ? "today" : "";
 
                     htmlInnehall += `
@@ -140,8 +143,9 @@
                 menuContent.innerHTML = htmlInnehall;
 
             } catch (error) {
-                console.error("Fel:", error);
-                document.getElementById("menu-content").innerHTML = '<div class="status-message">Kunde inte hämta matsedeln just nu.</div>';
+                console.error("Fel vid laddning:", error);
+                document.getElementById("menu-content").innerHTML = 
+                    '<div class="status-message">Kunde inte ladda matsedeln.</div>';
             }
         }
 
