@@ -27,7 +27,6 @@
             flex-direction: column;
             padding: 25px 20px;
             justify-content: space-between;
-            position: relative;
         }
 
         .header-area {
@@ -110,42 +109,10 @@
             letter-spacing: 1px;
             text-align: center;
         }
-
-        /* TESTKNAPPAR */
-
-        .nav-buttons {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            display: flex;
-            gap: 8px;
-            z-index: 100;
-        }
-
-        .nav-buttons button {
-            border: none;
-            background-color: #4e7da1;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-weight: 800;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .nav-buttons button:hover {
-            background-color: #76405d;
-        }
     </style>
 </head>
 
 <body>
-
-    <!-- TESTKNAPPAR -->
-    <div class="nav-buttons">
-        <button onclick="bytDag(-1)">←</button>
-        <button onclick="bytDag(1)">→</button>
-    </div>
 
     <div class="header-area">
         <h1 class="main-title">Denna dag i historien</h1>
@@ -174,21 +141,11 @@
             fotnot: "VETENSKAP"
         };
 
-        // TESTDATUM
-        let testDatum = new Date();
-
-        function bytDag(antal) {
-
-            testDatum.setDate(testDatum.getDate() + antal);
-
-            laddaHistorik();
-        }
-
         async function laddaHistorik() {
 
             try {
 
-                const nu = new Date(testDatum);
+                const nu = new Date();
 
                 const manader = [
                     "januari",
