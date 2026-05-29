@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nedräkning till Sommarlov</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Lås dokumentet till PLAYipp-fältets exakta mått */
+        html, body {
+            width: 1000px;
+            height: 707px;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #FFFFF9;
+            overflow: hidden; 
+        }
+
+        body {
+            color: #4e7da1;
+            font-family: 'Open Sans', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px; 
+            width: 900px; /* Ger lite marginal på sidorna (50px på varje sida) */
+            height: 620px; /* Håller innehållet centrerat och väl inom höjdgränsen */
+        }
+
+        .title {
+            font-size: 56px; /* Anpassad för 1000px bredd */
+            font-weight: 800;
+            letter-spacing: 4px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .days-count {
+            font-size: 190px; /* Justerad för att garantera att även 3-siffrigt får plats på höjden */
+            font-weight: 800;
+            line-height: 0.85;
+            margin: 10px 0;
+        }
+
+        .subtitle {
+            font-size: 46px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        /* Styling för sommarlovsmeddelandet på en rad */
+        .holiday-message-large {
+            font-size: 64px;
+            font-weight: 800;
+            line-height: 1.2;
+            width: 100%;
+            margin: 0 auto 20px auto;
+            white-space: nowrap; 
+        }
+
+        .holiday-message-small {
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1.4;
+            width: 100%;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="content-container">
+        </div>
+
+    <script>
+        function uppdateraSida() {
+            const idag = new Date();
+            const nuvarandeAr = idag.getFullYear();
+            
+            // Kolla om det är 11 juni (månad indexeras från 0, så 5 = juni)
+            if (idag.getMonth() === 5 && idag.getDate() === 11) {
+                // Visa sommarlovsmeddelandet
+                document.getElementById('content-container').innerHTML = `
+                    <h1 class="holiday-message-large">
+                        Ha ett härligt sommarlov!
+                    </h1>
+                    <p class="holiday-message-small">
+                        Vi ses igen den 14 augusti!
+                    </p>
+                `;
+            } else {
+                // Annars: Beräkna skoldagar kvar till 11 juni
+                let malDatum = new Date(nuvarandeAr, 5, 11);
+
+                if (idag > malDatum) {
+                    malDatum.setFullYear(nuvarandeAr + 1);
+                }
+
+                idag.setHours(0, 0, 0, 0);
+                malDatum.setHours(0, 0, 0, 0);
+
+                let antalSkoldagar = 0;
+                let tillfalligtDatum = new Date(idag);
+
+                while (tillfalligtDatum < malDatum) {
+                    tillfalligtDatum.setDate(tillfalligtDatum.getDate() + 1);
+                    
+                    const veckodag = tillfalligtDatum.getDay();
+                    if (veckodag !== 0 && veckodag !== 6) {
+                        antalSkoldagar++;
+                    }
+                }
+
+                document.getElementById('content-container').innerHTML = `
+                    <h1 class="title">SOMMARLOV OM</h1>
+                    <div class="days-count">${antalSkoldagar}</div>
+                    <h2 class="subtitle">SKOLDAGAR</h2>
+                `;
+            }
+        }
+
+        // Kör funktionen vid sidladdning
+        uppdateraSida();
+    </script>
+</body>
+</html>
