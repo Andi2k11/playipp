@@ -27,6 +27,7 @@
             flex-direction: column;
             padding: 25px 20px;
             justify-content: space-between;
+            position: relative;
         }
 
         .header-area {
@@ -67,9 +68,9 @@
         }
 
         .image-container img {
-            max-height: 100%;
-            width: auto;
-            object-fit: contain;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             border-radius: 8px;
         }
 
@@ -109,10 +110,42 @@
             letter-spacing: 1px;
             text-align: center;
         }
+
+        /* TESTKNAPPAR */
+
+        .nav-buttons {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .nav-buttons button {
+            border: none;
+            background-color: #4e7da1;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .nav-buttons button:hover {
+            background-color: #76405d;
+        }
     </style>
 </head>
 
 <body>
+
+    <!-- TESTKNAPPAR -->
+    <div class="nav-buttons">
+        <button onclick="bytDag(-1)">←</button>
+        <button onclick="bytDag(1)">→</button>
+    </div>
 
     <div class="header-area">
         <h1 class="main-title">Denna dag i historien</h1>
@@ -134,17 +167,28 @@
     </div>
 
     <script>
+
         const fallbackData = {
             titel: "Visste du att...?",
-            text: "Ljusets hastighet är ungefär 300 000 kilometer i sekunden. Det betyder att det tar solens strålar lite drygt 8 minuter att nå hela vägen fram till oss på jorden.",
+            text: "Ljusets hastighet är ungefär 300 000 kilometer i sekunden.",
             fotnot: "VETENSKAP"
         };
+
+        // TESTDATUM
+        let testDatum = new Date();
+
+        function bytDag(antal) {
+
+            testDatum.setDate(testDatum.getDate() + antal);
+
+            laddaHistorik();
+        }
 
         async function laddaHistorik() {
 
             try {
 
-                const nu = new Date();
+                const nu = new Date(testDatum);
 
                 const manader = [
                     "januari",
@@ -169,7 +213,7 @@
 
                 const datumNyckel = `${mm}-${dd}`;
 
-                const cacheBuster = "?t=" + nu.getTime();
+                const cacheBuster = "?t=" + new Date().getTime();
 
                 const response = await fetch('historik.json' + cacheBuster);
 
@@ -193,7 +237,7 @@
                         fallbackData.text;
 
                     document.getElementById("event-bild").src =
-                        "platshallare.jpg";
+                        "bilder/platshallare.png";
 
                     document.getElementById("event-ar").textContent =
                         fallbackData.fotnot;
@@ -238,7 +282,7 @@
                         this.onerror = function () {
 
                             this.onerror = null;
-                            this.src = "bilder/platshallare.jpg";
+                            this.src = "bilder/platshallare.png";
                         };
 
                         this.src = bildPng;
@@ -246,7 +290,7 @@
                     } else {
 
                         this.onerror = null;
-                        this.src = "platshallare.jpg";
+                        this.src = "bilder/platshallare.png";
                     }
                 };
 
@@ -261,7 +305,7 @@
                     fallbackData.text;
 
                 document.getElementById("event-bild").src =
-                    "platshallare.jpg";
+                    "bilder/platshallare.png";
 
                 document.getElementById("event-ar").textContent =
                     fallbackData.fotnot;
@@ -269,6 +313,7 @@
         }
 
         laddaHistorik();
+
     </script>
 
 </body>
