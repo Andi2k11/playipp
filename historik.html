@@ -60,16 +60,16 @@
             height: 240px;
             border-radius: 8px;
             overflow: hidden;
-            background-color: transparent; /* Borttagen grå bakgrund för renare look vid smala bilder */
+            background-color: transparent; 
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .image-container img {
-            max-height: 100%; /* Bilden blir aldrig högre än containerns 240px */
-            width: auto;       /* Bredden skalar sig proportionellt efter höjden */
-            object-fit: contain; /* Garanterar att hela bilden syns utan att beskäras */
+            max-height: 100%; 
+            width: auto;       
+            object-fit: contain; 
             border-radius: 8px;
         }
 
@@ -122,7 +122,7 @@
     </div>
 
     <div class="image-container">
-        <img id="event-bild" src="" alt="Händelsebild">
+        <img id="event-bild" src="" alt="Händelsebild" onerror="if (this.src != 'platshallare.jpg') this.src = 'platshallare.jpg';">
     </div>
 
     <div class="content-area">
@@ -135,10 +135,10 @@
     </div>
 
     <script>
+        // Ny fallback-data utan bildlänk (använder också platshallare.jpg om den triggas)
         const fallbackData = {
             titel: "Visste du att...?",
             text: "Ljusets hastighet är ungefär 300 000 kilometer i sekunden. Det betyder att det tar solens strålar lite drygt 8 minuter att nå hela vägen fram till oss på jorden.",
-            bild: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500", 
             fotnot: "VETENSKAP"
         };
 
@@ -151,6 +151,11 @@
 
                 const mm = String(nu.getMonth() + 1).padStart(2, '0');
                 const dd = String(nu.getDate()).padStart(2, '0');
+                
+                // Skapar bildnamnet baserat på datum, t.ex. "0801.jpg"
+                const bildNamn = `${mm}${dd}.jpg`;
+                
+                // Nyckel till JSON-filen (behåller bindestrecket där för tydlighet: "08-01")
                 const datumNyckel = `${mm}-${dd}`;
 
                 const cacheBuster = "?t=" + nu.getTime();
@@ -165,26 +170,31 @@
                     }
                 }
 
+                // Om datumet saknas -> Kör vår fallback och visa platshållarbilden
                 if (!valdHandelse) {
                     document.getElementById("event-titel").textContent = fallbackData.titel;
                     document.getElementById("event-text").textContent = fallbackData.text;
-                    document.getElementById("event-bild").src = fallbackData.bild;
+                    document.getElementById("event-bild").src = "platshallare.jpg";
                     document.getElementById("event-ar").textContent = fallbackData.fotnot;
                     return;
                 }
 
+                // Om allt finns -> Tryck ut datan på skärmen
                 const antalArSedan = nu.getFullYear() - valdHandelse.år;
                 
                 document.getElementById("event-titel").textContent = valdHandelse.titel;
                 document.getElementById("event-text").textContent = valdHandelse.text;
-                document.getElementById("event-bild").src = valdHandelse.bild;
-                document.getElementById("event-ar").textContent = `${antalArSedan} ÅR SEDAN (${valdHandelse.år})`;
+                
+                // Sätter bildens källa till t.ex. "0801.jpg". Om filen saknas kickar "onerror" igång i HTML-taggen ovan.
+                document.getElementById("event-bild").src = bildNamn;
+                
+                document.getElementById("event-ar").textContent = `${valdHandelse.kategori} | ${antalArSedan} ÅR SEDAN (${valdHandelse.år})`;
 
             } catch (error) {
                 console.error("Fel vid laddning av historik:", error);
                 document.getElementById("event-titel").textContent = fallbackData.titel;
                 document.getElementById("event-text").textContent = fallbackData.text;
-                document.getElementById("event-bild").src = fallbackData.bild;
+                document.getElementById("event-bild").src = "platshallare.jpg";
                 document.getElementById("event-ar").textContent = fallbackData.fotnot;
             }
         }
