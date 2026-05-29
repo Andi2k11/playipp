@@ -1,0 +1,48 @@
+
+              <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+                  <channel>
+                  <atom:link href="https://skolmaten.se/sodervangskolan" rel="self" type="application/rss+xml" />
+                      <title>Skolmaten - Södervångskolan</title>
+                      <description>Menyinformation för skolan</description>
+                      <link>https://skolmaten.se/sodervangskolan</link>
+                      <language>sv</language>
+                      <copyright>© https://skolmaten.se</copyright>
+                      
+              <item>
+                  <title>Måndag - Vecka 22</title>
+                  <description><![CDATA[pasta köttfärssås , <br/>pasta pestosås, <br/>Bygg din egen nudelsoppa ]]></description>
+                  <link>https://skolmaten.se/sodervangskolan</link>
+                  <guid isPermaLink="false">4788b752-8318-4d42-80e4-7e79fee3eb9c</guid>
+                  <pubDate>Mon, 25 May 2026 00:00:00 GMT</pubDate>
+               </item>
+              <item>
+                  <title>Tisdag - Vecka 22</title>
+                  <description><![CDATA[Fried rice med kyckling , <br/>Fried rice vegetarisk, <br/>Bygg din egen nudelsoppa ]]></description>
+                  <link>https://skolmaten.se/sodervangskolan</link>
+                  <guid isPermaLink="false">9a9b7076-739c-44ca-ab48-12ed1f9c3d91</guid>
+                  <pubDate>Tue, 26 May 2026 00:00:00 GMT</pubDate>
+               </item>
+              <item>
+                  <title>Onsdag - Vecka 22</title>
+                  <description><![CDATA[Potatisbullar &stekt falukorv, <br/>potatisbullar & lingon , <br/>Bygg din egen nudelsoppa ]]></description>
+                  <link>https://skolmaten.se/sodervangskolan</link>
+                  <guid isPermaLink="false">8d285741-52c1-45e6-9f76-046ac355644f</guid>
+                  <pubDate>Wed, 27 May 2026 00:00:00 GMT</pubDate>
+               </item>
+              <item>
+                  <title>Torsdag - Vecka 22</title>
+                  <description><![CDATA[Dansk fläskestek potatis sky och rödkål, <br/>veg schnitzel med sky och rödkål, <br/>Bygg din egen nudelsoppa ]]></description>
+                  <link>https://skolmaten.se/sodervangskolan</link>
+                  <guid isPermaLink="false">c09a1d23-491b-4e9b-9d98-e74c4276b12e</guid>
+                  <pubDate>Thu, 28 May 2026 00:00:00 GMT</pubDate>
+               </item>
+              <item>
+                  <title>Fredag - Vecka 22</title>
+                  <description><![CDATA[Tomatsoppa Bröd , <br/>buffe]]></description>
+                  <link>https://skolmaten.se/sodervangskolan</link>
+                  <guid isPermaLink="false">df52f2a7-28c7-44d0-a3a5-1e54091e8670</guid>
+                  <pubDate>Fri, 29 May 2026 00:00:00 GMT</pubDate>
+               </item>
+                  </channel>
+              </rss>
+          
