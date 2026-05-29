@@ -6,6 +6,9 @@ on:
     - cron: '0 3 * * 1-5'
   workflow_dispatch: # Gör att du kan starta hämtningen manuellt med en knapp
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: write
 
@@ -18,7 +21,7 @@ jobs:
 
       - name: Hamta matsedel fran Skolmaten API
         run: |
-          curl -s "https://skolmaten.se/api/4/menu/sodervangskolan?locale=sv" -o mat.json
+          curl -s "https://menu.skolmaten.se/api/2/menu/school/4678174526636032" -o mat.json
 
       - name: Spara och pusha andringar till GitHub
         run: |
