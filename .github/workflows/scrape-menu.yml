@@ -1,0 +1,28 @@
+name: Hamta Skolmaten Automatisk
+
+on:
+  schedule:
+    # Körs måndag till fredag kl 03:00 UTC (kl 05:00 svensk sommartid)
+    - cron: '0 3 * * 1-5'
+  workflow_dispatch: # Gör att du kan starta hämtningen manuellt med en knapp
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kolla ut koden
+        uses: actions/checkout@v4
+
+      - name: Hamta matsedel fran Skolmaten API
+        run: |
+          curl -s "https://skolmaten.se/api/4/menu/sodervangskolan?locale=sv" -o mat.json
+
+      - name: Spara och pusha andringar till GitHub
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "actions@github.com"
+          git add mat.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Automatisk uppdatering av matsedel" && git push)
