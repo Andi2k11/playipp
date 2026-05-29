@@ -104,6 +104,7 @@
     <script>
         async function laddaMatsedel() {
             try {
+                // Tvingar PLAYipp att hämta den senaste mat.xml-filen utan cache-strul
                 const cacheBuster = "?t=" + new Date().getTime();
                 const response = await fetch('mat.xml' + cacheBuster);
                 
@@ -111,7 +112,7 @@
                 
                 const textData = await response.text();
                 
-                // Tolka XML-texten till ett sökbart dokument
+                // Tolka XML-strukturen
                 const parser = new DOMParser();
                 const xmlDoc = parser.parseFromString(textData, "text/xml");
                 const items = xmlDoc.getElementsByTagName("item");
@@ -124,23 +125,27 @@
                 }
 
                 let htmlInnehall = "";
-                
-                // Array för att matcha RSS-titlar till veckodagsindex
                 const veckoDagar = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"];
                 const dagensIndex = new Date().getDay(); // 1 = Måndag, 5 = Fredag
 
-                // Loopa igenom matdagarna i RSS-flödet (max 5 dagar)
                 for (let i = 0; i < Math.min(items.length, 5); i++) {
                     const item = items[i];
                     
-                    // RSS-titeln innehåller oftast dagen, t.ex. "Måndag - Södervångskolan"
+                    // Hämtar titeln (t.ex. "Måndag - Vecka 22") och sparar bara veckodagen
                     const fullTitle = item.getElementsByTagName("title")[0].textContent;
                     const veckodag = fullTitle.split(" - ")[0].trim();
                     
-                    // Beskrivningen innehåller själva maten
-                    const beskrivning = item.getElementsByTagName("description")[0].textContent.trim();
+                    // Hämtar matbeskrivningen
+                    let beskrivning = item.getElementsByTagName("description")[0].textContent;
+                    
+                    // Formaterar om RSS-flödets fula <br/>-taggar till snygga snedstreck
+                    beskrivning = beskrivning.replace(/,\s*<br\s*\/?>/gi, " / ");
+                    beskrivning = beskrivning.replace(/<br\s*\/?>/gi, " / ");
+                    
+                    // Tar bort eventuella dubbla mellanslag i texten
+                    beskrivning = beskrivning.replace(/\s+/g, ' ').trim();
 
-                    // Kolla om denna rad matchar dagens faktiska veckodag
+                    // Kollar om loopen har nått fram till dagens faktiska veckodag
                     const arIdag = (veckoDagar[dagensIndex - 1] === veckodag) ? "today" : "";
 
                     htmlInnehall += `
@@ -156,10 +161,11 @@
             } catch (error) {
                 console.error("Fel vid laddning:", error);
                 document.getElementById("menu-content").innerHTML = 
-                    '<div class="status-message">Kunde inte tolka matsedeln.</div>';
+                    '<div class="status-message">Kunde inte ladda matsedeln just nu.</div>';
             }
         }
 
+        // Starta laddningen
         laddaMatsedel();
     </script>
 </body>
