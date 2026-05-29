@@ -43,7 +43,7 @@
         .sub-title {
             font-size: 14px;
             font-weight: 700;
-            color: #e65c00; /* Orange accent för stängda dagar-notis */
+            color: #d1787d; /* Ändrad till den nya rödrosa färgen */
             margin: 5px 0 15px 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -67,7 +67,6 @@
             padding: 8px 14px;
             border-radius: 6px;
             opacity: 0.85;
-            background-color: rgba(78, 125, 161, 0.05);
         }
 
         .day-name {
@@ -84,7 +83,7 @@
 
         /* --- STYLING FÖR DAGENS ÖPPETTID --- */
         .day-row.today {
-            background-color: #4e7da1;
+            background-color: #4e7da1; /* Säkerställd till denna blå färg */
             color: #FFFFF9;
             opacity: 1;
             box-shadow: 0 4px 12px rgba(78, 125, 161, 0.25);
@@ -95,9 +94,9 @@
             font-size: 16px;
         }
 
-        /* --- FOTTER MED KONTAKTINFO --- */
+        /* --- FOOTER MED KONTAKTINFO --- */
         .footer-area {
-            background-color: #5c6b73;
+            background-color: #76405d; /* Ändrad till den nya lila/plommon-färgen */
             color: #FFFFF9;
             padding: 12px;
             border-radius: 6px;
@@ -123,36 +122,33 @@
     </div>
 
     <div class="times-container" id="times-content">
-        </div>
+        <!-- Tiderna laddas in här via JavaScript -->
+    </div>
 
     <div class="footer-area" id="footer-content">
-        </div>
+        <!-- Kontaktinfo laddas in här -->
+    </div>
 
     <script>
         async function laddaFritidsgard() {
             try {
                 const cacheBuster = "?t=" + new Date().getTime();
-                const response = await fetch('fritidsgardtider.json' + cacheBuster);
+                const response = await fetch('fritid.json' + cacheBuster);
                 
                 if (!response.ok) throw new Error("Kunde inte hitta fritid.json");
                 
                 const data = await response.json();
                 
-                // Sätt rubriker
                 document.getElementById("skola-namn").textContent = data.namn;
                 document.getElementById("notis-text").textContent = data.notis;
 
-                // Bygg öppettiderna
                 let htmlInnehall = "";
                 const veckoDagar = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"];
                 
-                // JavaScript getDay() ger: 0=Söndag, 1=Måndag, 2=Tisdag...
-                // Vi gör om det så att 0=Måndag, 6=Söndag för att matcha vår array
                 let dagensIndex = new Date().getDay() - 1;
-                if (dagensIndex === -1) dagensIndex = 6; // Fixa söndagen
+                if (dagensIndex === -1) dagensIndex = 6; 
 
                 data.oppettider.forEach((obj, index) => {
-                    // Kolla om raden är IDAG
                     const arIdag = (index === dagensIndex) ? "today" : "";
 
                     htmlInnehall += `
@@ -164,7 +160,6 @@
                 });
                 document.getElementById("times-content").innerHTML = htmlInnehall;
 
-                // Bygg fottern
                 document.getElementById("footer-content").innerHTML = `
                     <div class="footer-title">${data.kontakt.arrangor}</div>
                     <div><b>Adr:</b> ${data.kontakt.adress} | <b>Tel:</b> ${data.kontakt.telefon}</div>
