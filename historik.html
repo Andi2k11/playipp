@@ -43,7 +43,7 @@
         .date-title {
             font-size: 16px;
             font-weight: 700;
-            color: #76405d; /* Den lila profilfärgen från fritidsgården */
+            color: #76405d; 
             margin: 5px 0 15px 0;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -60,17 +60,17 @@
             height: 240px;
             border-radius: 8px;
             overflow: hidden;
-            background-color: #f0f0f0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background-color: transparent; /* Borttagen grå bakgrund för renare look vid smala bilder */
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            max-height: 100%; /* Bilden blir aldrig högre än containerns 240px */
+            width: auto;       /* Bredden skalar sig proportionellt efter höjden */
+            object-fit: contain; /* Garanterar att hela bilden syns utan att beskäras */
+            border-radius: 8px;
         }
 
         /* --- TEXTINNEHÅLL --- */
@@ -116,7 +116,7 @@
 <body>
 
     <div class="header-area">
-        <h1 class="main-title">Denna dag för...</h1>
+        <h1 class="main-title">Denna dag i historien</h1>
         <div class="date-title" id="dagens-datum">Laddar datum...</div>
         <div class="divider"></div>
     </div>
@@ -135,11 +135,10 @@
     </div>
 
     <script>
-        // Standardfakta som visas om datumet saknas i din JSON-fil
         const fallbackData = {
             titel: "Visste du att...?",
             text: "Ljusets hastighet är ungefär 300 000 kilometer i sekunden. Det betyder att det tar solens strålar lite drygt 8 minuter att nå hela vägen fram till oss på jorden.",
-            bild: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500", // En snygg rymdbild från Unsplash
+            bild: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500", 
             fotnot: "VETENSKAP"
         };
 
@@ -147,16 +146,13 @@
             try {
                 const nu = new Date();
                 
-                // Formatera dagens datum till "29 maj" för rubriken
                 const manader = ["januari", "februari", "mars", "april", "maj", "juni", "juli", "augusti", "september", "oktober", "november", "december"];
                 document.getElementById("dagens-datum").textContent = `${nu.getDate()} ${manader[nu.getMonth()]}`;
 
-                // Skapa JSON-nyckeln (t.ex. "05-29")
                 const mm = String(nu.getMonth() + 1).padStart(2, '0');
                 const dd = String(nu.getDate()).padStart(2, '0');
                 const datumNyckel = `${mm}-${dd}`;
 
-                // Hämta historik.json
                 const cacheBuster = "?t=" + nu.getTime();
                 const response = await fetch('historik.json' + cacheBuster);
                 
@@ -164,13 +160,11 @@
                 
                 if (response.ok) {
                     const data = await response.json();
-                    // Titta om dagens datum finns i JSON-filen
                     if (data[datumNyckel]) {
                         valdHandelse = data[datumNyckel];
                     }
                 }
 
-                // Om datumet saknas eller filen inte hittas -> Kör vår fallback
                 if (!valdHandelse) {
                     document.getElementById("event-titel").textContent = fallbackData.titel;
                     document.getElementById("event-text").textContent = fallbackData.text;
@@ -179,7 +173,6 @@
                     return;
                 }
 
-                // Om allt finns -> Tryck ut datan på skärmen
                 const antalArSedan = nu.getFullYear() - valdHandelse.år;
                 
                 document.getElementById("event-titel").textContent = valdHandelse.titel;
@@ -189,7 +182,6 @@
 
             } catch (error) {
                 console.error("Fel vid laddning av historik:", error);
-                // Visar fallbacken även vid serverfel så skärmen förblir snygg
                 document.getElementById("event-titel").textContent = fallbackData.titel;
                 document.getElementById("event-text").textContent = fallbackData.text;
                 document.getElementById("event-bild").src = fallbackData.bild;
