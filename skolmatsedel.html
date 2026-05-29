@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veckans Matsedel - Södervångskolan</title>
+    <title>Veckans Matsedel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@700;800&display=swap" rel="stylesheet">
+    
     <style>
         html, body {
             width: 480px;
@@ -11,25 +15,137 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            background-color: #FFFFF9; /* Din exakta bakgrundsfärg */
-            overflow: hidden;
+            background-color: #FFFFF9;
+            overflow: hidden; 
+            font-family: 'Open Sans', sans-serif;
+            color: #4e7da1;
         }
 
-        /* Tvingar ramen att fylla ytan exakt och döljer scrollister */
-        iframe {
-            width: 100%;
+        body {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .menu-title {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin: 0 0 15px 0;
+            text-transform: uppercase;
+            text-align: center;
+            border-bottom: 3px solid #4e7da1;
+            padding-bottom: 5px;
+        }
+
+        .days-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             height: 100%;
-            border: none;
-            background-color: #FFFFF9;
+        }
+
+        .day-row {
+            padding: 6px 10px;
+            border-radius: 6px;
+            opacity: 0.75;
+        }
+
+        .day-name {
+            font-size: 16px;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .food-text {
+            font-size: 14px;
+            font-weight: 700;
+            margin: 2px 0 0 0;
+            line-height: 1.3;
+            color: #5c6b73;
+        }
+
+        .day-row.today {
+            background-color: #4e7da1;
+            color: #FFFFF9;
+            opacity: 1;
+            padding: 10px;
+            box-shadow: 0 4px 10px rgba(78, 125, 161, 0.2);
+        }
+
+        .day-row.today .food-text {
+            color: #FFFFF9;
+            font-size: 16px;
+        }
+        
+        .day-row.today .day-name {
+            font-size: 18px;
+        }
+
+        .status-message {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 50px;
         }
     </style>
 </head>
 <body>
 
-    <iframe 
-        src="https://menu.skolmaten.se/sodervangskolan?history=0&header=0" 
-        allowtransparency="true">
-    </iframe>
+    <h1 class="menu-title">Skolmat</h1>
+    <div class="days-container" id="menu-content">
+        <div class="status-message">Hämtar veckans meny...</div>
+    </div>
 
+    <script>
+        // Vi använder en stabil och öppen open-source proxy (ThingProxy) för att hämta Skolmatens JSON-API säkert
+        const apiTarget = "https://skolmaten.se/api/4/menu/sodervangskolan?locale=sv";
+        const cleanProxy = "https://thingproxy.freeboard.io/fetch/" + apiTarget;
+
+        async function laddaMatsedel() {
+            try {
+                const response = await fetch(cleanProxy);
+                if (!response.ok) throw new Error("Kunde inte läsa data");
+                
+                const data = await response.json();
+                const menuContent = document.getElementById("menu-content");
+                
+                if (!data || !data.weeks || data.weeks.length === 0 || !data.weeks[0].days) {
+                    menuContent.innerHTML = '<div class="status-message">Ingen matsedel tillgänglig.</div>';
+                    return;
+                }
+
+                let htmlInnehall = "";
+                const dagensIndex = new Date().getDay(); // 1 = Måndag, 5 = Fredag
+                const dagar = data.weeks[0].days;
+
+                for (let i = 0; i < Math.min(dagar.length, 5); i++) {
+                    const dagData = dagar[i];
+                    const veckodag = dagData.name; 
+                    const beskrivning = dagData.items.join(", "); 
+
+                    // Kollar om dagen är idag
+                    const arIdag = (dagensIndex === (i + 1)) ? "today" : "";
+
+                    htmlInnehall += `
+                        <div class="day-row ${arIdag}">
+                            <div class="day-name">${veckodag}</div>
+                            <p class="food-text">${beskrivning || "Ingen meny registrerad"}</p>
+                        </div>
+                    `;
+                }
+
+                menuContent.innerHTML = htmlInnehall;
+
+            } catch (error) {
+                console.error("Fel:", error);
+                document.getElementById("menu-content").innerHTML = '<div class="status-message">Kunde inte hämta matsedeln just nu.</div>';
+            }
+        }
+
+        laddaMatsedel();
+    </script>
 </body>
 </html>
