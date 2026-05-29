@@ -1,0 +1,1 @@
+{"errors":[{"message":"School must be UUID","field":"schoolId"},{"message":"Year must be numeric","field":"year"},{"message":"Week must be numeric","field":"week"}]}
