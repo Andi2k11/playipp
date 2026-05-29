@@ -132,7 +132,7 @@
         async function laddaFritidsgard() {
             try {
                 const cacheBuster = "?t=" + new Date().getTime();
-                const response = await fetch('fritid.json' + cacheBuster);
+                const response = await fetch('fritidsgardtider.json' + cacheBuster);
                 
                 if (!response.ok) throw new Error("Kunde inte hitta fritid.json");
                 
