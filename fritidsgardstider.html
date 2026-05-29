@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vellinge Fritidsgård - Öppettider</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        html, body {
+            width: 480px;
+            height: 678px;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #FFFFF9;
+            overflow: hidden; 
+            font-family: 'Open Sans', sans-serif;
+            color: #4e7da1;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            padding: 25px 20px;
+            justify-content: space-between;
+        }
+
+        .header-area {
+            text-align: center;
+        }
+
+        .main-title {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .sub-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #e65c00; /* Orange accent för stängda dagar-notis */
+            margin: 5px 0 15px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .divider {
+            border-bottom: 3px solid #4e7da1;
+            margin-bottom: 15px;
+        }
+
+        .times-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .day-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 14px;
+            border-radius: 6px;
+            opacity: 0.85;
+            background-color: rgba(78, 125, 161, 0.05);
+        }
+
+        .day-name {
+            font-size: 15px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .day-time {
+            font-size: 15px;
+            font-weight: 700;
+            color: #5c6b73;
+        }
+
+        /* --- STYLING FÖR DAGENS ÖPPETTID --- */
+        .day-row.today {
+            background-color: #4e7da1;
+            color: #FFFFF9;
+            opacity: 1;
+            box-shadow: 0 4px 12px rgba(78, 125, 161, 0.25);
+        }
+
+        .day-row.today .day-time {
+            color: #FFFFF9;
+            font-size: 16px;
+        }
+
+        /* --- FOTTER MED KONTAKTINFO --- */
+        .footer-area {
+            background-color: #5c6b73;
+            color: #FFFFF9;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        .footer-title {
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-area">
+        <h1 class="main-title" id="skola-namn">Fritidsgård</h1>
+        <div class="sub-title" id="notis-text">Röda dagar stängt</div>
+        <div class="divider"></div>
+    </div>
+
+    <div class="times-container" id="times-content">
+        </div>
+
+    <div class="footer-area" id="footer-content">
+        </div>
+
+    <script>
+        async function laddaFritidsgard() {
+            try {
+                const cacheBuster = "?t=" + new Date().getTime();
+                const response = await fetch('fritid.json' + cacheBuster);
+                
+                if (!response.ok) throw new Error("Kunde inte hitta fritid.json");
+                
+                const data = await response.json();
+                
+                // Sätt rubriker
+                document.getElementById("skola-namn").textContent = data.namn;
+                document.getElementById("notis-text").textContent = data.notis;
+
+                // Bygg öppettiderna
+                let htmlInnehall = "";
+                const veckoDagar = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"];
+                
+                // JavaScript getDay() ger: 0=Söndag, 1=Måndag, 2=Tisdag...
+                // Vi gör om det så att 0=Måndag, 6=Söndag för att matcha vår array
+                let dagensIndex = new Date().getDay() - 1;
+                if (dagensIndex === -1) dagensIndex = 6; // Fixa söndagen
+
+                data.oppettider.forEach((obj, index) => {
+                    // Kolla om raden är IDAG
+                    const arIdag = (index === dagensIndex) ? "today" : "";
+
+                    htmlInnehall += `
+                        <div class="day-row ${arIdag}">
+                            <div class="day-name">${obj.dag}</div>
+                            <div class="day-time">${obj.tid}</div>
+                        </div>
+                    `;
+                });
+                document.getElementById("times-content").innerHTML = htmlInnehall;
+
+                // Bygg fottern
+                document.getElementById("footer-content").innerHTML = `
+                    <div class="footer-title">${data.kontakt.arrangor}</div>
+                    <div><b>Adr:</b> ${data.kontakt.adress} | <b>Tel:</b> ${data.kontakt.telefon}</div>
+                `;
+
+            } catch (error) {
+                console.error("Fel vid laddning:", error);
+                document.getElementById("times-content").innerHTML = 
+                    '<div style="text-align:center; font-weight:700; margin-top:50px;">Kunde inte ladda tiderna.</div>';
+            }
+        }
+
+        laddaFritidsgard();
+    </script>
+</body>
+</html>
