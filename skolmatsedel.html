@@ -104,33 +104,44 @@
     <script>
         async function laddaMatsedel() {
             try {
-                // Hämtar mat.json direkt från ditt eget repo med en cache-buster
                 const cacheBuster = "?t=" + new Date().getTime();
-                const response = await fetch('mat.json' + cacheBuster);
+                const response = await fetch('mat.xml' + cacheBuster);
                 
-                if (!response.ok) throw new Error("Kunde inte hitta mat.json");
+                if (!response.ok) throw new Error("Kunde inte hitta mat.xml");
                 
-                const data = await response.json();
+                const textData = await response.text();
+                
+                // Tolka XML-texten till ett sökbart dokument
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(textData, "text/xml");
+                const items = xmlDoc.getElementsByTagName("item");
+                
                 const menuContent = document.getElementById("menu-content");
                 
-                if (!data || !data.weeks || data.weeks.length === 0 || !data.weeks[0].days) {
-                    menuContent.innerHTML = '<div class="status-message">Ingen matsedel tillgänglig.</div>';
+                if (items.length === 0) {
+                    menuContent.innerHTML = '<div class="status-message">Ingen matsedel tillgänglig denna vecka.</div>';
                     return;
                 }
 
                 let htmlInnehall = "";
+                
+                // Array för att matcha RSS-titlar till veckodagsindex
+                const veckoDagar = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"];
                 const dagensIndex = new Date().getDay(); // 1 = Måndag, 5 = Fredag
-                const dagar = data.weeks[0].days;
 
-                for (let i = 0; i < Math.min(dagar.length, 5); i++) {
-                    const dagData = dagar[i];
-                    const veckodag = dagData.name; 
+                // Loopa igenom matdagarna i RSS-flödet (max 5 dagar)
+                for (let i = 0; i < Math.min(items.length, 5); i++) {
+                    const item = items[i];
                     
-                    // Slår ihop rätter om det finns flera (t.ex. vegetariskt)
-                    const beskrivning = dagData.items.join(" / "); 
+                    // RSS-titeln innehåller oftast dagen, t.ex. "Måndag - Södervångskolan"
+                    const fullTitle = item.getElementsByTagName("title")[0].textContent;
+                    const veckodag = fullTitle.split(" - ")[0].trim();
+                    
+                    // Beskrivningen innehåller själva maten
+                    const beskrivning = item.getElementsByTagName("description")[0].textContent.trim();
 
-                    // Kolla om raden är dagens dag (måndag=1, tisdag=2...)
-                    const arIdag = (dagensIndex === (i + 1)) ? "today" : "";
+                    // Kolla om denna rad matchar dagens faktiska veckodag
+                    const arIdag = (veckoDagar[dagensIndex - 1] === veckodag) ? "today" : "";
 
                     htmlInnehall += `
                         <div class="day-row ${arIdag}">
@@ -145,7 +156,7 @@
             } catch (error) {
                 console.error("Fel vid laddning:", error);
                 document.getElementById("menu-content").innerHTML = 
-                    '<div class="status-message">Kunde inte ladda matsedeln.</div>';
+                    '<div class="status-message">Kunde inte tolka matsedeln.</div>';
             }
         }
 
